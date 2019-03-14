@@ -1,5 +1,6 @@
 #include <iostream>
 #include "game-map-defs.h"
+#include "ncurses-maze-draw.h"
 
 // Draws maze onto screen
 // Parameters:
@@ -10,10 +11,10 @@ void drawMaze(const Map &maze)
     {
         for (int column = 0; column < cMazeColumns; column++)
         {
-            std::cout << maze[row][column];
+         	char ch = maze[row][column];
+		std::cout << ch;
         }
-
-        std::cout << std::endl;
+	std::cout << std::endl;
     }
 }
 

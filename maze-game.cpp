@@ -1,34 +1,9 @@
 #include <iostream>
 #include <string>
 #include <random>
+#include <cstdio>
 #include "game-map-defs.h"
-
-// Checks if user want so play
-// Return true if user wants to play; false otherwise
-bool doesUserWantsToPlay()
-{
-    bool rResult = false;
-
-    std::cout << "Maze Game" << std::endl;
-
-    while (true)
-    {
-        std::cout << "Do you want to play? (1 - yes, 0 - no):";
-
-        std::string answer;
-        std::cin >> answer;
-
-        if ((answer == "1") || (answer == "0"))
-        {
-            rResult = (answer == "1");
-            break;
-        }
-
-        std::cout << "Sorry, I did not understand." << std::endl;
-    }
-
-    return rResult;
-}
+#include "game-map-utils.h"
 
 // Generates maze
 // Parameters:
@@ -51,15 +26,9 @@ void generateMaze(Map &prMaze)
         }
     }
 
-    // Place character - always at positon 1,1
-    prMaze[1][1] = cCharacterSymbol;
 
-    // Place exit randomly
-    static std::random_device rd;
-    static std::mt19937 mt{rd()};
-    static std::uniform_int_distribution<int> rowGenerator = std::uniform_int_distribution<int>(2, cMazeRows - 2);
-    static std::uniform_int_distribution<int> columnGenerator = std::uniform_int_distribution<int>(2, cMazeColumns - 2);
-    prMaze[rowGenerator(mt)][columnGenerator(mt)] = cExitSymbol;
+    prMaze[1][1] = cCharacterSymbol;
+    prMaze[cMazeRows - 2][cMazeColumns - 2] = cExitSymbol;
 }
 
 // Moves character according to given command and retuns eaten symbol (if any)
@@ -70,7 +39,7 @@ void generateMaze(Map &prMaze)
 //      prMaze - reference to maze field; will be modified as a result of command execution
 char moveAndGather(int row,
                    int column,
-                   const std::string &command,
+                   int command,
                    Map &prMaze)
 {
     char rCharMovedOnto = cEmptySymbol;
@@ -78,7 +47,7 @@ char moveAndGather(int row,
     // Take character out from map
     prMaze[row][column] = cEmptySymbol;
 
-    if (command == "l")
+    if (command == 'l')
     {
         rCharMovedOnto = prMaze[row][column - 1];
 
@@ -88,7 +57,7 @@ char moveAndGather(int row,
         }
     }
 
-    if (command == "r")
+    if (command == 'r')
     {
         rCharMovedOnto = prMaze[row][column + 1];
 
@@ -98,7 +67,7 @@ char moveAndGather(int row,
         }
     }
 
-    if (command == "u")
+    if (command == 'u')
     {
         rCharMovedOnto = prMaze[row - 1][column];
 
@@ -108,7 +77,7 @@ char moveAndGather(int row,
         }
     }
 
-    if (command == "d")
+    if (command == 'd')
     {
         rCharMovedOnto = prMaze[row + 1][column];
 
@@ -143,9 +112,7 @@ bool moveCharacterAndCheckIfExitFound(Map &prMaze)
     int charColumn = 1;
     if (scanForChar(prMaze, cCharacterSymbol, charRow, charColumn))
     {
-        std::cout << "Command (l - left, r - right, u - up, d- down):";
-        std::string command;
-        std::cin >> command;
+	int command = getchar();
 
         const char charMovedOnto = moveAndGather(charRow, charColumn, command, prMaze);
 
@@ -171,8 +138,6 @@ bool moveCharacterAndCheckIfExitFound(Map &prMaze)
 // Executes one round of the game
 void playMazeGame()
 {
-    std::cout << "LETS START!" << std::endl;
-
     Map maze;
     generateMaze(maze);
 
@@ -185,9 +150,6 @@ void playMazeGame()
 
 int main()
 {
-    while (doesUserWantsToPlay())
-    {
-        playMazeGame();
-    }
+    playMazeGame();
 }
 
